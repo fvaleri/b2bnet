@@ -1,0 +1,20 @@
+apiVersion: interconnectedcloud.github.io/v1alpha1
+kind: Interconnect
+metadata:
+  name: dc1-gateway
+spec:
+  deploymentPlan:
+    size: 1
+    role: interior
+    placement: Any
+  interRouterListeners:
+    # accept connections from other routers
+    - port: 55672
+      expose: true
+      authenticatePeer: false
+      saslMechanisms: ANONYMOUS
+  addresses:
+    # routing b2b addresses through broker queues
+    # never use waypoint with multicast distribution to avoid message loss
+    - prefix: b2b
+      waypoint: true

@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: amq-broker
+  # cluster-wide not supported
+  namespace: changeit
+spec:
+  name: amq-broker
+  channel: current
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace

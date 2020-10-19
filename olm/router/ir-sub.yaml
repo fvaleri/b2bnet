@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: amq7-interconnect-operator
+  # cluster-wide not supported
+  namespace: changeit
+spec:
+  name: amq7-interconnect-operator
+  channel: 1.2.0
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace

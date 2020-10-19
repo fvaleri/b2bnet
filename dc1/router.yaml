@@ -1,0 +1,55 @@
+apiVersion: interconnectedcloud.github.io/v1alpha1
+kind: Interconnect
+metadata:
+  name: dc1-router
+spec:
+  deploymentPlan:
+    size: 1
+    role: interior
+    placement: Any
+  interRouterListeners:
+    # accept connections from other routers
+    - port: 55672
+      expose: true
+      authenticatePeer: false
+      saslMechanisms: ANONYMOUS
+  listeners:
+    # internal clients connect here
+    - port: 5672
+    # external clients connect here
+    - port: 5671
+      sslProfile: default
+      expose: true
+    # exposing web console
+    - port: 8080
+      authenticatePeer: true
+      expose: true
+      http: true
+  interRouterConnectors:
+    # connection to gateway router
+    - host: dc1-gateway
+      port: 55672
+      saslMechanisms: ANONYMOUS
+  connectors:
+    # connection to local broker
+    - host: dc1-broker-amqp-0-svc.dc1.svc.cluster.local
+      port: 5672
+      name: dc1-broker
+      routeContainer: true
+  addresses:
+    # routing b2b messages through broker
+    - prefix: b2b
+      waypoint: true
+  # always single producer and consumer regardless of num. of clients
+  autoLinks:
+    # direct messages from producers to the broker on this address
+    - address: b2b.dc1.incoming
+      connection: dc1-broker
+      direction: out
+      # 0 from prod to out-al, 1 from in-al to cons
+      phase: 0
+    # pulls messages from the broker into the router and onto consumers
+    - address: b2b.dc1.outgoing
+      connection: dc1-broker
+      direction: in
+      phase: 1
